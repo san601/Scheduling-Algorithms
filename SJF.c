@@ -16,17 +16,18 @@ typedef struct{
 
 void inputProcess(int n, PCB P[])
 {
+    srand(time(0));
     for (int i = 0; i < n; i++)
     {
-        printf("Process P%d\n", i + 1);
-        P[i].iPID = i + 1;
-        printf("Arrival time: ");
-        scanf("%d", &P[i].iArrival);
-        printf("Burst time: ");
-        scanf("%d", &P[i].iBurst);
+//        printf("Process P%d\n", i + 1);
 //        P[i].iPID = i + 1;
-//        P[i].iArrival = rand() % 21;
-//        P[i].iBurst = (rand() % 11) + 2;
+//        printf("Arrival time: ");
+//        scanf("%d", &P[i].iArrival);
+//        printf("Burst time: ");
+//        scanf("%d", &P[i].iBurst);
+        P[i].iPID = i + 1;
+        P[i].iArrival = rand() % 21;
+        P[i].iBurst = (rand() % 11) + 2;
     }
     // Print all the current processes
     printf("Current processes:\n");
@@ -242,13 +243,16 @@ int main()
     printf("\nReady Queue: ");
     printProcess(1, ReadyQueue);
 
+    // The first while loop is to sequentially push all the processes into the Ready Queue
+    // based on their arrival time and burst time
+
     quickSort(Input, 0, iRemain - 1, SORT_BY_BURST);
     int currentTime = ReadyQueue[0].iFinish; // only be used in the next loop
     while (iRemain > 0)
     {
         // Sort by burst all the processes that arrive between 0 and currentTime
         // And take the one with the shortest burt time
-        bool flag = false;
+        int flag = 0;
         for (int i = 0; i < iRemain; i++)
         {
             if (Input[i].iArrival <= currentTime)
@@ -256,7 +260,7 @@ int main()
                 currentTime += Input[i].iBurst;
                 pushProcess(&iReady, ReadyQueue, Input[i]);
                 removeProcess(&iRemain, i, Input);
-                flag = true;
+                flag = 1;
                 break;
             }
         }
