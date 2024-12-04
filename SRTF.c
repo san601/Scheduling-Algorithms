@@ -16,17 +16,18 @@ typedef struct{
 
 void inputProcess(int n, PCB P[])
 {
+    srand(time(0));
     for (int i = 0; i < n; i++)
     {
-        printf("Process P%d\n", i + 1);
-        P[i].iPID = i + 1;
-        printf("Arrival time: ");
-        scanf("%d", &P[i].iArrival);
-        printf("Burst time: ");
-        scanf("%d", &P[i].iBurst);
+//        printf("Process P%d\n", i + 1);
 //        P[i].iPID = i + 1;
-//        P[i].iArrival = rand() % 21;
-//        P[i].iBurst = (rand() % 11) + 2;
+//        printf("Arrival time: ");
+//        scanf("%d", &P[i].iArrival);
+//        printf("Burst time: ");
+//        scanf("%d", &P[i].iBurst);
+        P[i].iPID = i + 1;
+        P[i].iArrival = rand() % 21;
+        P[i].iBurst = (rand() % 11) + 2;
     }
     // Print all the current processes
     printf("Current processes:\n");
@@ -259,15 +260,17 @@ int main()
     // Shortest Remaining Time First
     while (iRemain > 0 || iReady > 0)
     {
-        bool flag = false;
+        int flag = 0;
         for (int i = 0; i < iRemain; i++)
         {
+            // Check if any process arrives at the current time
             if (Input[i].iArrival <= currentTime)
             {
-                if (Input[0].iBurst < ReadyQueue[0].iBurstRemain) flag = true;
+                if (Input[0].iBurst < ReadyQueue[0].iBurstRemain) flag = 1;
                 Input[i].iBurstRemain = Input[i].iBurst;
                 pushProcess(&iReady, ReadyQueue, Input[i]);
                 removeProcess(&iRemain, i, Input);
+                i--;
             }
         }
         if (flag)
@@ -276,10 +279,13 @@ int main()
             temp.iStart = ReadyQueue[0].iStart;
             temp.iFinish = currentTime;
             temp.iBurst = temp.iFinish - temp.iStart;
-            pushProcess(&iTerminated, TerminatedArray, temp);
-            quickSort(ReadyQueue, 0, iReady - 1, SORT_BY_BURST);
-            ReadyQueue[0].iStart = currentTime;
-            OriginalProcess[ReadyQueue[0].iPID].iStart = currentTime;
+            if (temp.iBurst != 0)
+            {
+                pushProcess(&iTerminated, TerminatedArray, temp);
+                quickSort(ReadyQueue, 0, iReady - 1, SORT_BY_BURST);
+                ReadyQueue[0].iStart = currentTime;
+                OriginalProcess[ReadyQueue[0].iPID].iStart = currentTime;
+            }
         }
         currentTime++;
         ReadyQueue[0].iBurstRemain--;
@@ -296,6 +302,15 @@ int main()
 
             quickSort(ReadyQueue, 0, iReady - 1, SORT_BY_BURST);
             if (iReady > 0) ReadyQueue[0].iStart = currentTime;
+            else if (iRemain > 0)
+            {
+                quickSort(Input, 0, iRemain - 1, SORT_BY_ARRIVAL);
+                currentTime = Input[0].iArrival;
+                Input[0].iBurstRemain = Input[0].iBurst;
+                pushProcess(&iReady, ReadyQueue, Input[0]);
+                removeProcess(&iRemain, 0, Input);
+                ReadyQueue[0].iStart = currentTime;
+            }
         }
     }
 
