@@ -16,17 +16,18 @@ typedef struct{
 
 void inputProcess(int n, PCB P[])
 {
+    srand(time(0));
     for (int i = 0; i < n; i++)
     {
-        printf("Process P%d\n", i + 1);
-        P[i].iPID = i + 1;
-        printf("Arrival time: ");
-        scanf("%d", &P[i].iArrival);
-        printf("Burst time: ");
-        scanf("%d", &P[i].iBurst);
+//        printf("Process P%d\n", i + 1);
 //        P[i].iPID = i + 1;
-//        P[i].iArrival = rand() % 21;
-//        P[i].iBurst = (rand() % 11) + 2;
+//        printf("Arrival time: ");
+//        scanf("%d", &P[i].iArrival);
+//        printf("Burst time: ");
+//        scanf("%d", &P[i].iBurst);
+        P[i].iPID = i + 1;
+        P[i].iArrival = rand() % 21;
+        P[i].iBurst = (rand() % 11) + 2;
     }
     // Print all the current processes
     printf("Current processes:\n");
@@ -254,6 +255,7 @@ int main()
     // Round Robin
     while (iRemain > 0 || iReady > 0)
     {
+        // If there is no process in the ready queue, set the current time to the next process arrival time
         if (iReady == 0) currentTime = Input[0].iArrival;
         // Get all process from current time to next start time
         for (int i = 0; i < iRemain; i++)
@@ -274,10 +276,6 @@ int main()
             currentTime += iQuantumTime;
             ReadyQueue[0].iBurst -= iQuantumTime;
             ReadyQueue[0].iFinish += iQuantumTime;
-            for (int i = 1; i < iReady; i++)
-            {
-                ReadyQueue[i].iWaiting += iQuantumTime;
-            }
             // Create a temp process to display in Gantt chart
             PCB temp = ReadyQueue[0];
             temp.iStart = currentTime - iQuantumTime;
@@ -294,10 +292,6 @@ int main()
             currentTime += ReadyQueue[0].iBurst;
             ReadyQueue[0].iFinish = currentTime;
             ReadyQueue[0].iTaT = ReadyQueue[0].iFinish - ReadyQueue[0].iArrival;
-//            for (int i = 1; i < iReady; i++)
-//            {
-//                ReadyQueue[i].iWaiting += ReadyQueue[0].iBurst;
-//            }
             pushProcess(&iTerminated, TerminatedArray, ReadyQueue[0]);
             ReadyQueue[0].iBurst = OriginalProcess[ReadyQueue[0].iPID].iBurst;
             pushProcess(&ReadyQueue[0].iPID, OriginalProcess, ReadyQueue[0]);
