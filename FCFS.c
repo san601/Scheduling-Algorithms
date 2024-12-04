@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define SORT_BY_ARRIVAL 0
 #define SORT_BY_PID 1
@@ -15,17 +16,25 @@ typedef struct{
 
 void inputProcess(int n, PCB P[])
 {
+    srand(time(0));
     for (int i = 0; i < n; i++)
     {
-        printf("Nhap tien trinh P%d\n", i + 1);
-        P[i].iPID = i + 1;
-        printf("Nhap arrival time: ");
-        scanf("%d", &P[i].iArrival);
-        printf("Nhap burst time: ");
-        scanf("%d", &P[i].iBurst);
+//        printf("Nhap tien trinh P%d\n", i + 1);
 //        P[i].iPID = i + 1;
-//        P[i].iArrival = rand() % 21;
-//        P[i].iBurst = (rand() % 11) + 2;
+//        printf("Nhap arrival time: ");
+//        scanf("%d", &P[i].iArrival);
+//        printf("Nhap burst time: ");
+//        scanf("%d", &P[i].iBurst);
+        P[i].iPID = i + 1;
+        P[i].iArrival = rand() % 21;
+        P[i].iBurst = (rand() % 11) + 2;
+    }
+    // Print all the current processes
+    printf("Current processes:\n");
+    printf("PID\tArrival\tBurst\n");
+    for (int i = 0; i < n; i++)
+    {
+        printf("P%d\t%d\t%d\n", P[i].iPID, P[i].iArrival, P[i].iBurst);
     }
 }
 
@@ -202,7 +211,7 @@ int main()
     PCB Input[10];
     PCB ReadyQueue[10];
     PCB TerminatedArray[10];
-    memset(ReadyQueue, 0, sizeof(ReadyQueue) * 10);
+    memset(&ReadyQueue, 0, sizeof(PCB) * 10);
     int iNumberOfProcess;
     printf("Please input number of Process: ");
     scanf("%d", &iNumberOfProcess);
